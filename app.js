@@ -185,6 +185,55 @@ app.post('/stk_callback', (req, resp) => {
     // console.log("confirmation...")
 })
 
+app.get('/b2c', access, (req, res) => {
+    const url = 'https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest',
+        auth = 'Bearer ' + req.access_token
+
+    request({
+            method: "POST",
+            url: url,
+            headers: {
+                "Authorization": auth
+            },
+            json: {
+                "InitiatorName": "apitest342",
+                "SecurityCredential": "Q9KEnwDV/V1LmUrZHNunN40AwAw30jHMfpdTACiV9j+JofwZu0G5qrcPzxul+6nocE++U6ghFEL0E/5z/JNTWZ/pD9oAxCxOik/98IYPp+elSMMO/c/370Joh2XwkYCO5Za9dytVmlapmha5JzanJrqtFX8Vez5nDBC4LEjmgwa/+5MvL+WEBzjV4I6GNeP6hz23J+H43TjTTboeyg8JluL9myaGz68dWM7dCyd5/1QY0BqEiQSQF/W6UrXbOcK9Ac65V0+1+ptQJvreQznAosCjyUjACj35e890toDeq37RFeinM3++VFJqeD5bf5mx5FoJI/Ps0MlydwEeMo/InA==",
+                "CommandID": "BusinessPayment",
+                "Amount": "200",
+                "PartyA": "601342",
+                "PartyB": "254708374149",
+                "Remarks": "Salary for December",
+                "QueueTimeOutURL": "http://197.248.86.122:801/b2c_timeout_url",
+                "ResultURL": "http://197.248.86.122:801/b2c_result_url",
+                "Occasion": "DEC2019"
+            }
+        },
+        function(error, response, body) {
+            if (error) {
+                console.log(error)
+            } else {
+                res.status(200).json(body)
+            }
+        }
+    )
+})
+
+app.post('/b2c_result_url', (req, resp) => {
+    // console.log("stk......")
+    console.log(req.body.Result.ResultParameters, " B2C.......")
+
+
+    // console.log("confirmation...")
+})
+
+app.post('/b2c_timeout_url', (req, resp) => {
+    // console.log("stk......")
+    console.log(req.body, " B2C....TIMEOUT...")
+
+
+    // console.log("confirmation...")
+})
+
 function access(req, res, next) {
     //access token
 
