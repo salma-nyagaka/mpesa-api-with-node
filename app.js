@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 const request = require('request')
+const moment = require("moment")
+
 
 //routes
 app.get('/', (req, res) => {
@@ -116,6 +118,8 @@ app.get('/balance', access, (req, resp) => {
         })
 })
 
+
+
 app.post('/timeout_url', (req, resp) => {
     console.log("balance time out report.......")
     console.log(req.body, " req body timeout balance report.......")
@@ -131,6 +135,55 @@ app.post('/result_url', (req, resp) => {
     // console.log("validation......")
 })
 
+//lipa na mpesa stk - lmno
+
+
+app.get('/stk', access, (req, res) => {
+    const url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+        auth = "Bearer " + req.access_token
+        // let date = new Date()
+        // const timestamp = date.getFullYear() + "" + "" + date.getMonth() + "" + "" + date.getDate() + "" + "" + date.getHours() + "" + "" + date.getMinutes() + "" + "" + date.getSeconds()
+    let timestamp = moment().format('YYYYMMDDHHmmss')
+
+    const password = new Buffer.from('174379' + 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919' + timestamp).toString('base64')
+
+    request({
+            url: url,
+            method: "POST",
+            headers: {
+                "Authorization": auth
+            },
+            json: {
+                "BusinessShortCode": "174379",
+                "Password": password,
+                "Timestamp": timestamp,
+                "TransactionType": "CustomerPayBillOnline",
+                "Amount": "1",
+                "PartyA": "254716437799",
+                "PartyB": "174379",
+                "PhoneNumber": "254716437799",
+                "CallBackURL": "http://197.248.86.122:801/stk_callback",
+                "AccountReference": "Test",
+                "TransactionDesc": "TestPay"
+            }
+        },
+        function(error, response, body) {
+            if (error) {
+                console.log(error)
+            } else {
+                res.status(200).json(body)
+            }
+        }
+    )
+})
+
+app.post('/stk_callback', (req, resp) => {
+    // console.log("stk......")
+    console.log(req.body.Body.CallbackMetadata, " stk.......")
+
+
+    // console.log("confirmation...")
+})
 
 function access(req, res, next) {
     //access token
