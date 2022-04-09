@@ -29,6 +29,6 @@
         "request": "^2.88.2"
     },
     "devDependencies": {
-        "moment": "^2.25.3"
+        "moment": "^2.29.2"
     }
 }
